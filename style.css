@@ -1,0 +1,79 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-family: Helvetica, Arial, sans-serif;
+    height: 100%;
+}
+
+body {
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    background-color: blanchedalmond;
+}
+
+section {
+    margin: 0px, 0px, 0px 0px;
+    padding: 0px, 0px, 0px, 0px;
+    display: grid;
+    grid-template-columns: 10% 80% 10%;
+    grid-template-rows: 10% 80% 10%;
+}
+
+/* start button*/
+
+button.start {
+    align-self: center;
+    justify-self: center;
+
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-bottom: 5px;
+    padding-right: 5px;
+
+    border-radius: 25%;
+    border-width: 3px;
+    border-color: black;
+
+    box-shadow: black;
+
+    margin-left: 20px;
+    margin-top: 5px;
+
+    cursor: pointer;
+}
+
+
+h1 {
+    position: absolute;
+    font-size: 2em;
+    color: black;
+    letter-spacing: -1px;
+    margin-top: 5px;
+    margin-right: 20px;
+    top: -4px;
+    right: 5px;
+}
+
+div.but {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    align-self: start;
+    justify-self: center;
+}
+
+canvas.game {
+    padding-left: 0;
+    padding-right: 0;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    justify-self: center;
+}
