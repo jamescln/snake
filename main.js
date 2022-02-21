@@ -30,7 +30,6 @@ let gridSectionWidth = width / 15;
 let gridSectionHeight = height / 15;
 let onGrid = false;
 let onGridY = false;
-//let gameSpeed = gridSectionHeight * 0.1
 
 
 // setup the random number generator
@@ -144,38 +143,38 @@ class Snake {
             this.x += this.velX;
         }
     
-    }
-
-    // creating the check bounds method for the snek
-
-    checkBounds() {
-        if ((this.x + (this.size - 1)) >= width) {    
-            movRight = false;
-            start = false;
-            gameOver = true;
-        } 
-        
-        if ((this.x + 1) <= 0) {
-            movLeft = false;
-            start = false;
-            gameOver = true;
-        } 
-        
-        if ((this.y + (this.size - 1)) >= height) {
-            movDown = false;
-            start = false;
-            gameOver = true;
-        } 
-        
-        if ((this.y + 1) <= 0) {
-            movUp = false;
-            start = false;
-            gameOver = true;
-        }
-    }   
+    }  
 }
 
-//adding collision detection to the snake prototype
+// || Collision detection with the edge of the canvas
+
+Snake.prototype.checkBounds = function() {
+    if ((this.x + (this.size - 1)) >= width) {    
+        movRight = false;
+        start = false;
+        gameOver = true;
+    } 
+    
+    if ((this.x + 1) <= 0) {
+        movLeft = false;
+        start = false;
+        gameOver = true;
+    } 
+    
+    if ((this.y + (this.size - 1)) >= height) {
+        movDown = false;
+        start = false;
+        gameOver = true;
+    } 
+    
+    if ((this.y + 1) <= 0) {
+        movUp = false;
+        start = false;
+        gameOver = true;
+    }
+}
+
+// || collision detection to the snake prototype
 
 Snake.prototype.collisionDetect = function() {
 
@@ -204,7 +203,7 @@ Snake.prototype.collisionDetect = function() {
     }
 }
 
-// code for the snake to create a movement path that the body/tail follows
+// || code for the snake to create a movement path that the body/tail follows
 
 Snake.prototype.addMovementPath = function () {
     let pushDir;
@@ -407,22 +406,21 @@ function loop () {
     ctx.fillRect(0, 0 , width, height);
 
     snake.draw();
-    //snake.setControl();
-    //snake.checkBounds();
-    //snake.collisionDetect();
+    snake.setControl();
+    snake.checkBounds();
+    snake.collisionDetect();
 
     if (tailExists){    
         for (t=0; t < tails.length; t++) {
         tails[t].draw();
-        //tails[t].move();
-        //tails[t].collision();
+        tails[t].move();
+        tails[t].collision();
         }
     }
     
     apple.drawFood();
    
     if (start) {
-        //setTimeout(loop, 16.6); // this makes the function excecute at around 60 fps
         requestAnimationFrame(loop);
     }
 
@@ -432,25 +430,6 @@ function loop () {
 
         div.appendChild(retry);
     
-    }
-}
-
-// attempt at making a loop that runs the game at a variable speed to the canvas
-
-function backgroundLoop () {
-    if (start) {
-        setTimeout(backgroundLoop, gameSpeed);
-    }
-
-    snake.setControl();
-    snake.checkBounds();
-    snake.collisionDetect();
-
-    if (tailExists) {
-        for (i=0; i < tails.length; i++) {
-            tails[i].move();
-            tails[i].collision();
-        }
     }
 }
 
@@ -533,34 +512,3 @@ function retryGame(e) {
     drawCanvas();
     snake.draw();
 }
-
-// make food appear at random points on the screen - DONE
-    // make a food class - DONE
-    // make the food class appear on the same grid as the snake - DONE
-
-// make the snake able to eat the food - DONE 031121
-
-// make the snake grow longer when it eats food. - DONE 181121
-    
-    // create a tail object that follows the snake. - DONE 10112021
-    // get the head of the snake to save the x/y coordinates to an array and direction of a move - DONE 101121
-    // get the tail object to move when it hits these coordinates - Done 10112021
-    // get the tail object to clear the array of the x/y coordinates once it has passed them. - DONE 10112021
-    // make them spawn in a line properly - DONE 151121
-    // make them follow the co-ordinates set by the snake - DONE 18112021
-
-// make the snake collision detect with itself - DONE 18112021
-
-// make the game load at a relative size to the browser window - DONE 241121
-
-// make the game run at 60 fps consistently - DONE 251121
-
-// make the objects move at a speed relative to the size of the canvas - DONE? 281121
-
-// make the snake only grow by 1 when touching an apple - DONE 281121
-
-// make the apple unable to spawn inside the snake - DONE 281121
-
-// make a score tally that increases as the snake eats food and resets when the game does
-
-// add game over text and high score feature
