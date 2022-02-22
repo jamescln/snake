@@ -62,22 +62,12 @@ function loop (timeStamp) {
     snake.collisionDetect();
 
     if (tailExists){    
-        for (t=0; t < tails.length; t++) {
-        tails[t].draw();
-        tails[t].move();
-        tails[t].collision();
+        for (i=0; i < tails.length; i++) {
+        tails[i].draw();
+        tails[i].move();
+        tails[i].collision();
         }
     }
-
-    // if (tails.length < 1) {
-    //     tailAdd1.drawFood();
-    //     tailAdd1.collision();
-    // }
-
-    // if (tails.length < 2) {
-    //     tailAdd2.drawFood();
-    //     tailAdd2.collision();
-    // } else {}
 
     apple.drawFood();
    
@@ -109,17 +99,6 @@ function loop (timeStamp) {
     ctx.fillText('Score: ' + score, 600, 30);
     ctx.fillText('High Score: ' + highScore, 720, 30);
 }
-
-// ||| test
-
-function test () {
-    ctx.fillstyle = 'orange';
-    for (i = 0; i < tails.length; i++) {
-        let tail = tails[i];
-        ctx.fillRect(tail)
-    }
-}
-
 
 // || Random number generator ______________________________________
 
@@ -294,10 +273,10 @@ Snake.prototype.addMovementPath = function () {
 
 // || The Tail Class _____________________________________
 class Tail {
-    constructor(velX, velY, arrPos) {
+    constructor(velX, velY, arrPos, color) {
         this.height = gridSectionHeight;
         this.width = gridSectionWidth;
-        this.colour = 'green';
+        this.color = color;
         this.x;
         this.y;
         this.velX = velX;
@@ -313,7 +292,7 @@ class Tail {
 // || Tail draw method
 
 Tail.prototype.draw = function () {
-    ctx.fillstyle = this.colour;
+    ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
 }
 
@@ -463,7 +442,7 @@ function velocityMatch() {
 // || anotherTail function __________________________________
 
 function anotherTail() {
-    let tail = new Tail(snake.velX, snake.velY, arrPosNo);
+    let tail = new Tail(snake.velX, snake.velY, arrPosNo, 'green');
     tail.createTail();
     tails.push(tail);
     arrPosNo += 1;
