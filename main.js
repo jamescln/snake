@@ -1,45 +1,134 @@
-// setup canvas and html variables
+// || setup canvas and html variables
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 const container = document.querySelector('.container');
-
-
-
-if ((window.innerHeight * 0.8) % 30 !== 0) {
-    canvas.height = Math.ceil((window.innerHeight * 0.8)/30) * 30;
-    canvas.width = canvas.height;
-} else {
-    canvas.height = window.innerHeight * 0.8;
-    canvas.width = height;
-}
-
-let height = canvas.height;
-let width = height;
-
-// should take 2730 ms for the snake to reach the other end of the screen
-
-let gameSpeed = Math.round ((2730 / canvas.height) * 10) / 10;
-//let gameSpeed = 2730 / gameSpeed;
-
 const div = document.querySelector('div');
 
-// add some code to make the snake move on more of a grid system like in the OG game
+let height = canvas.height;
+let width = canvas.height;
+
+let retry = document.createElement('button');
+retry.className = 'start';
+retry.textContent = 'Retry?';
+retry.addEventListener('click', retryGame);
+
+// || Global variables __________________________________
 
 let gridSectionWidth = width / 15;
 let gridSectionHeight = height / 15;
 let onGrid = false;
 let onGridY = false;
 
+let wPressed = false;
+let sPressed = false;
+let aPressed = false;
+let dPressed = false;
 
-// setup the random number generator
+let movUp = false;
+let movDown = false;
+let movLeft = false;
+let movRight = false;
+
+let tailExists = false;
+
+let start = false;
+let gameOver = false;
+
+let tails = [];
+let tl = tails.length;
+
+let arrPosNo = 0;
+
+let newFoodX;
+let newFoodY;
+
+let score = 0;
+let highScore = 0;
+
+let secondsPassed;
+let oldTimeStamp;
+let fps;
+
+// || Game Loop __________________________________________
+
+function loop (timeStamp) {
+    ctx.fillStyle = 'rgba(0,0,0,1)';
+    ctx.fillRect(0, 0 , width, height);
+
+    snake.draw();
+    snake.setControl();
+    snake.checkBounds();
+    snake.collisionDetect();
+
+    if (tailExists){    
+        for (t=0; t < tails.length; t++) {
+        tails[t].draw();
+        tails[t].move();
+        tails[t].collision();
+        }
+    }
+
+    // if (tails.length < 1) {
+    //     tailAdd1.drawFood();
+    //     tailAdd1.collision();
+    // }
+
+    // if (tails.length < 2) {
+    //     tailAdd2.drawFood();
+    //     tailAdd2.collision();
+    // } else {}
+
+    apple.drawFood();
+   
+    if (start) {
+        requestAnimationFrame(loop);
+    }
+
+    if (gameOver) {
+
+        div.appendChild(retry);
+    
+    }
+
+
+    //number of s since last frame
+    secondsPassed = (timeStamp - oldTimeStamp) / 1000;
+    oldTimeStamp = timeStamp;
+
+    // fps
+    fps = Math.round(1 / secondsPassed);
+
+    // get the snake moving at a good speed
+    velocityMatch();
+
+    // draw to screen
+    ctx.font = '25px Arial';
+    ctx.fillStyle = 'white';
+    ctx.fillText("FPS: " + fps, 10, 30);
+    ctx.fillText('Score: ' + score, 600, 30);
+    ctx.fillText('High Score: ' + highScore, 720, 30);
+}
+
+// ||| test
+
+function test () {
+    ctx.fillstyle = 'orange';
+    for (i = 0; i < tails.length; i++) {
+        let tail = tails[i];
+        ctx.fillRect(tail)
+    }
+}
+
+
+// || Random number generator ______________________________________
 
 function random (min, max) {
     const num = Math.floor(Math.random() * (max - min + 1)) + min;
     return num;
 }
 
-// define the snake constructor
+// || Snake constructor _________________________________________
 
 class Snake {
     constructor(velX, velY,) {
@@ -48,130 +137,108 @@ class Snake {
         this.x = gridSectionWidth * 7;
         this.y = gridSectionHeight * 7;
         this.size = gridSectionWidth;
-        this.color = 'green';
+        this.color = 'orange';
     }
+}
 
-    // creating the draw method for Snake
+// || Draw method
 
-    draw() {
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.size, this.size);
-    }
+Snake.prototype.draw = function() {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x, this.y, this.size, this.size);
+}
 
-    // creating the setControl method for Snake
+// || Set control method
 
-    setControl() {
-        let this_ = this;
+Snake.prototype.setControl = function() {
+    let this_ = this;
         
-        if (movUp || movDown) {
-            let __this = this;
+    if (movUp || movDown) {
 
-            window.onkeydown = function(e) {
-                
-                if (e.key === 'a') {
-                    aPressed = true;
-                    dPressed = false;
-                }  else if (e.key === 'd') {
-                    dPressed = true;
-                    aPressed = false;
-                }
-            }
-
-            if ((__this.y + gridSectionHeight) % gridSectionHeight === 0) {
-                onGridY = true;
-            } else {
-                onGridY = false;
-            }
-        }
-
-        if (movLeft || movRight) {
+        window.onkeydown = function(e) {
             
-            let _this = this;
-
-            window.onkeydown = function(e) {
-
-                if (e.key === 'w') {
-                   wPressed = true;
-                   sPressed = false;
-
-                } else if (e.key === 's') {
-                    sPressed = true;
-                    wPressed = false;
-                }
-            }
-
-            if ((_this.x + gridSectionWidth) % gridSectionWidth === 0) {
-                onGrid = true;
-            } else {
-                onGrid = false;
+            if (e.key === 'a') {
+                aPressed = true;
+                dPressed = false;
+            }  else if (e.key === 'd') {
+                dPressed = true;
+                aPressed = false;
             }
         }
 
-        if (wPressed && onGrid) {
-            wPressed = false;
-            clearMov();
-            movUp = true;
-            if (tailExists) {    
-                this_.addMovementPath();}
-        } else if (sPressed && onGrid) {
-            sPressed = false;
-            clearMov();
-            movDown = true;
-            if (tailExists) {
-                this_.addMovementPath();}
-        } else if (aPressed && onGridY) {
-            aPressed = false;
-            clearMov();
-            movLeft = true;
-            if (tailExists) {
-                this_.addMovementPath();}
-        } else if (dPressed && onGridY) {
-            dPressed = false;
-            clearMov();
-            movRight = true;
-            if (tailExists) {    
-                this_.addMovementPath();}
+        if ((this_.y + gridSectionHeight) % gridSectionHeight === 0) {
+            onGridY = true;
+        } else {
+            onGridY = false;
+        }
+    }
+
+    if (movLeft || movRight) {
+
+        window.onkeydown = function(e) {
+
+            if (e.key === 'w') {
+               wPressed = true;
+               sPressed = false;
+
+            } else if (e.key === 's') {
+                sPressed = true;
+                wPressed = false;
+            }
         }
 
-        if (movUp) {
-            this.y -= this.velY;
-        } else if (movLeft) {
-            this.x -= this.velX
-        } else if (movDown) {
-            this.y += this.velY;
-        } else if (movRight) {
-            this.x += this.velX;
+        if ((this_.x + gridSectionWidth) % gridSectionWidth === 0) {
+            onGrid = true;
+        } else {
+            onGrid = false;
         }
-    
-    }  
+    }
+
+    if (wPressed && onGrid) {
+        wPressed = false;
+        clearMov();
+        movUp = true;
+        if (tailExists) {    
+            this_.addMovementPath();}
+    } else if (sPressed && onGrid) {
+        sPressed = false;
+        clearMov();
+        movDown = true;
+        if (tailExists) {
+            this_.addMovementPath();}
+    } else if (aPressed && onGridY) {
+        aPressed = false;
+        clearMov();
+        movLeft = true;
+        if (tailExists) {
+            this_.addMovementPath();}
+    } else if (dPressed && onGridY) {
+        dPressed = false;
+        clearMov();
+        movRight = true;
+        if (tailExists) {    
+            this_.addMovementPath();}
+    }
+
+    if (movUp) {
+        this.y -= this.velY;
+    } else if (movLeft) {
+        this.x -= this.velX
+    } else if (movDown) {
+        this.y += this.velY;
+    } else if (movRight) {
+        this.x += this.velX;
+    }
 }
 
 // || Collision detection with the edge of the canvas
 
 Snake.prototype.checkBounds = function() {
-    if ((this.x + (this.size - 1)) >= width) {    
-        movRight = false;
+    if ((this.x + (this.size - 1)) >= width || (this.x + 1) <= 0 || (this.y + (this.size - 1)) >= height || (this.y + 1) <= 0) {
+        clearMov();
         start = false;
         gameOver = true;
     } 
-    
-    if ((this.x + 1) <= 0) {
-        movLeft = false;
-        start = false;
-        gameOver = true;
-    } 
-    
-    if ((this.y + (this.size - 1)) >= height) {
-        movDown = false;
-        start = false;
-        gameOver = true;
-    } 
-    
-    if ((this.y + 1) <= 0) {
-        movUp = false;
-        start = false;
-        gameOver = true;
-    }
 }
 
 // || collision detection to the snake prototype
@@ -184,11 +251,12 @@ Snake.prototype.collisionDetect = function() {
         this.y < apple.yLocation + apple.height &&
         this.y + this.size > apple.yLocation) {
             apple.newLocation();
+            score++;
             anotherTail();
             if (!tailExists) {
                 tailExists = true;
-            } else {}
-        } else {}
+            }
+        }
     
     // collision with other parts of the snake
     for (i=2; i < tails.length; i++) {
@@ -224,15 +292,7 @@ Snake.prototype.addMovementPath = function () {
     }
 }
 
-
-
-//The tails array
-
-let tails = [];
-let tl = tails.length;
-
-// The Tail Class constructor
-
+// || The Tail Class _____________________________________
 class Tail {
     constructor(velX, velY, arrPos) {
         this.height = gridSectionHeight;
@@ -250,14 +310,14 @@ class Tail {
     }
 }
 
-// tail draw method
+// || Tail draw method
 
 Tail.prototype.draw = function () {
     ctx.fillstyle = this.colour;
     ctx.fillRect(this.x, this.y, this.width, this.height);
 }
 
-// tail creation method
+// || createTail method
 
 Tail.prototype.createTail = function () {
     if (!tailExists){
@@ -300,12 +360,9 @@ Tail.prototype.createTail = function () {
             this.y = tails[tl -1].y;
         }
     }
-
-    ctx.fillstyle = this.colour;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
 }
 
-// tail move method
+// || tail move method
 
 Tail.prototype.move = function() {
     if (this.x === this.pathX[0] && this.y === this.pathY[0]) {
@@ -344,29 +401,15 @@ Tail.prototype.collision = function() {
     }
 }
 
-// code for creating new tails
-
-let arrPosNo = 0;
-
-function anotherTail() {
-    let tail = new Tail(snake.velX, snake.velY, arrPosNo);
-    tail.createTail();
-    tails.push(tail);
-    arrPosNo += 1;
-    tl = tails.length;
-};
-
-
-
-// create the food class
+// Food class _______________________________________________________
 
 class Food {
-    constructor() {
+    constructor(colour, xLocation, yLocation) {
         this.height = gridSectionHeight;
         this.width = gridSectionWidth;
-        this.colour = 'red';
-        this.xLocation = random(0, 14) * gridSectionWidth;
-        this.yLocation = random(0, 14) * gridSectionHeight;
+        this.colour = colour;
+        this.xLocation = xLocation;
+        this.yLocation = yLocation;
     }
 
     drawFood() {
@@ -384,80 +427,57 @@ class Food {
     }
 }
 
-let newFoodX;
-let newFoodY;
+// Food.prototype.collision = function() {
+//     if (this.xLocation < snake.x + snake.size &&
+//         this.xLocation + this.width > snake.x &&
+//         this.yLocation < snake.y + snake.size &&
+//         this.yLocation + this.height > snake.y) {
+//             anotherTail();
+//             if (!tailExists) {
+//                 tailExists = true;
+//             }
+//             this.xLocation = null;
+//             this.yLocation = null;
+//         }
+// }
 
+// || create a new snake and food instance
 
-// create a new snake and food instance
+let snake = new Snake(6, 6);
+let apple = new Food('red', random(0, 14) * gridSectionWidth, random(0, 14) * gridSectionWidth);
+// let tailAdd1 = new Food('grey', snake.x, snake.y - gridSectionHeight);
+// let tailAdd2 = new Food('grey', snake.x, snake.y - (gridSectionHeight * 2));
 
-let snake = new Snake(1, 1);
-let apple = new Food();
+// || velocityMatch function _______________________________
 
-// draw the initial canvas
+function velocityMatch() {
+    if (fps >= 120) {
+        snake.velX = 3;
+        snake.velY = 3;
+    } else {
+        snake.velX = 6;
+        snake.velY = 6;
+    }
+}
+
+// || anotherTail function __________________________________
+
+function anotherTail() {
+    let tail = new Tail(snake.velX, snake.velY, arrPosNo);
+    tail.createTail();
+    tails.push(tail);
+    arrPosNo += 1;
+    tl = tails.length;
+};
+
+// || drawCanvas function ____________________________________
+
 function drawCanvas() {
     ctx.fillStyle = 'rgba(0,0,0,1)';
     ctx.fillRect(0, 0, width, height);
 }
 
-// create the animation loop
-
-function loop () {
-    ctx.fillStyle = 'rgba(0,0,0,1)';
-    ctx.fillRect(0, 0 , width, height);
-
-    snake.draw();
-    snake.setControl();
-    snake.checkBounds();
-    snake.collisionDetect();
-
-    if (tailExists){    
-        for (t=0; t < tails.length; t++) {
-        tails[t].draw();
-        tails[t].move();
-        tails[t].collision();
-        }
-    }
-    
-    apple.drawFood();
-   
-    if (start) {
-        requestAnimationFrame(loop);
-    }
-
-    // adding the retry button if gameOver is true
-
-    if (gameOver) {
-
-        div.appendChild(retry);
-    
-    }
-}
-
-// variables for use on first load. First time drawing the snake and canvas.
-
-let wPressed = false;
-let sPressed = false;
-let aPressed = false;
-let dPressed = false;
-
-let movUp = false;
-let movDown = false;
-let movLeft = false;
-let movRight = false;
-
-let tailExists = false;
-
-let start = false;
-let gameOver = false;
-
-ctx.fillStyle = 'rgba(0,0,0,1)';
-ctx.fillRect(0, 0 , width, height);
-
-snake.draw();
-snake.setControl();
-snake.checkBounds();
-
-// function to reset the mov variables to false
+// || clearMov function (resets mov variables) ________________
 
 function clearMov() {
     movUp = false;
@@ -470,7 +490,7 @@ function clearMov() {
     dPressed = false;
 }
 
-// start the game with startGame function
+// || startGame function _______________________________
 
 const btn = document.querySelector('button');
 btn.className = 'start';
@@ -482,18 +502,9 @@ function startGame(e) {
     start = true;
     gameOver = false;
     loop();
-    backgroundLoop();
 }
 
-// making the retry button 
-
-let retry = document.createElement('button');
-retry.className = 'start';
-retry.textContent = 'Retry?';
-
-retry.addEventListener('click', retryGame);
-
-// function to reset the gamestate
+// || Retry function ________________________________
 
 function retryGame(e) {
 
@@ -503,12 +514,28 @@ function retryGame(e) {
     clearMov();
     tailExists = false;
 
+    if (score > highScore) {
+        highScore = score;
+    }
+
     tails.length = 0;
     arrPosNo = 0;
+    score = 0;
 
     snake.x = gridSectionWidth * 7;
     snake.y = gridSectionHeight * 7;
     apple.newLocation();
     drawCanvas();
     snake.draw();
+}
+
+// || Init function _______________________________
+
+window.onload = init;
+
+function init() {
+    drawCanvas();
+    snake.draw();
+    snake.setControl();
+    snake.checkBounds();
 }
