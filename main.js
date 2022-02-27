@@ -37,8 +37,11 @@ let gameOver = false;
 
 let tails = [];
 let tl = tails.length;
-
 let arrPosNo = 0;
+
+let snakeArrX = [];
+let snakeArrY = [];
+let globalDirArr=[];
 
 let newFoodX;
 let newFoodY;
@@ -61,12 +64,11 @@ function loop (timeStamp) {
     snake.checkBounds();
     snake.collisionDetect();
 
-    if (tailExists){    
-        for (i=0; i < tails.length; i++) {
+       
+    for (i=0; i < tails.length; i++) {
         tails[i].draw();
         tails[i].move();
         tails[i].collision();
-        }
     }
 
     apple.drawFood();
@@ -131,6 +133,22 @@ Snake.prototype.draw = function() {
 
 Snake.prototype.setControl = function() {
     let this_ = this;
+
+    if ((this_.y + gridSectionHeight) % gridSectionHeight === 0) {
+        onGridY = true;
+    } else {
+        onGridY = false;
+    }
+
+    if ((this_.x + gridSectionWidth) % gridSectionWidth === 0) {
+        onGrid = true;
+    } else {
+        onGrid = false;
+    }
+
+    if (onGrid && onGridY) {
+        this.addMovementPath();
+    }
         
     if (movUp || movDown) {
 
@@ -145,12 +163,16 @@ Snake.prototype.setControl = function() {
             }
         }
 
-        if ((this_.y + gridSectionHeight) % gridSectionHeight === 0) {
-            onGridY = true;
-        } else {
-            onGridY = false;
-        }
+        // if ((this_.y + gridSectionHeight) % gridSectionHeight === 0) {
+        //     onGridY = true;
+        // } else {
+        //     onGridY = false;
+        // }
     }
+
+    // if (onGrid && onGridY) {
+    //     this.addMovementPath();
+    // }
 
     if (movLeft || movRight) {
 
@@ -166,37 +188,29 @@ Snake.prototype.setControl = function() {
             }
         }
 
-        if ((this_.x + gridSectionWidth) % gridSectionWidth === 0) {
-            onGrid = true;
-        } else {
-            onGrid = false;
-        }
+        // if ((this_.x + gridSectionWidth) % gridSectionWidth === 0) {
+        //     onGrid = true;
+        // } else {
+        //     onGrid = false;
+        // }
     }
 
     if (wPressed && onGrid) {
         wPressed = false;
         clearMov();
         movUp = true;
-        if (tailExists) {    
-            this_.addMovementPath();}
     } else if (sPressed && onGrid) {
         sPressed = false;
         clearMov();
         movDown = true;
-        if (tailExists) {
-            this_.addMovementPath();}
     } else if (aPressed && onGridY) {
         aPressed = false;
         clearMov();
         movLeft = true;
-        if (tailExists) {
-            this_.addMovementPath();}
     } else if (dPressed && onGridY) {
         dPressed = false;
         clearMov();
         movRight = true;
-        if (tailExists) {    
-            this_.addMovementPath();}
     }
 
     if (movUp) {
@@ -264,11 +278,20 @@ Snake.prototype.addMovementPath = function () {
         pushDir = 'right';
     };
     
-    if (tailExists) {
-            tails[0].pathX.unshift(this.x);
-            tails[0].pathY.unshift(this.y);
-            tails[0].dirArr.unshift(pushDir);
+    snakeArrX.unshift(this.x);
+    snakeArrY.unshift(this.y);
+    globalDirArr.unshift(pushDir);
+
+    if (snakeArrX.length > tails.length + 2) {
+        snakeArrX.pop();
+    };
+    if (snakeArrY.length > tails.length + 2) {
+        snakeArrY.pop();
     }
+    if (globalDirArr.length > tails.length + 2) {
+        globalDirArr.pop();
+    }
+    console.log(snakeArrY);
 }
 
 // || The Tail Class _____________________________________
@@ -344,14 +367,20 @@ Tail.prototype.createTail = function () {
 // || tail move method
 
 Tail.prototype.move = function() {
-    if (this.x === this.pathX[0] && this.y === this.pathY[0]) {
-        this.tailDirection = this.dirArr[0];
-        if (tails.length > 1 && this.arrPos !== tails.length -1) {
-            tails[this.arrPos + 1].dirArr.push(this.dirArr[0]); 
-            tails[this.arrPos + 1].pathX.push(this.pathX[0]);
-            tails[this.arrPos + 1].pathY.push(this.pathY[0]);
-        }
-        this.clearMovPath();
+    // if (this.x === this.pathX[0] && this.y === this.pathY[0]) {
+    //     this.tailDirection = this.dirArr[0];
+    //     if (tails.length > 1 && this.arrPos !== tails.length -1) {
+    //         tails[this.arrPos + 1].dirArr.push(this.dirArr[0]); 
+    //         tails[this.arrPos + 1].pathX.push(this.pathX[0]);
+    //         tails[this.arrPos + 1].pathY.push(this.pathY[0]);
+    //     }
+    //     this.clearMovPath();
+    // }
+
+    if (onGrid && onGridY) {
+        this.x = snakeArrX[1];
+        this.y = snakeArrY[1];
+        this.tailDirection = globalDirArr[0];
     }
 
     if (this.tailDirection === 'up') {
@@ -424,8 +453,6 @@ class Food {
 
 let snake = new Snake(6, 6);
 let apple = new Food('red', random(0, 14) * gridSectionWidth, random(0, 14) * gridSectionWidth);
-// let tailAdd1 = new Food('grey', snake.x, snake.y - gridSectionHeight);
-// let tailAdd2 = new Food('grey', snake.x, snake.y - (gridSectionHeight * 2));
 
 // || velocityMatch function _______________________________
 
