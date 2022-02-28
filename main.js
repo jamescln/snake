@@ -56,8 +56,7 @@ let fps;
 // || Game Loop __________________________________________
 
 function loop (timeStamp) {
-    ctx.fillStyle = 'rgba(0,0,0,1)';
-    ctx.fillRect(0, 0 , width, height);
+    drawCanvas();
 
     snake.draw();
     snake.setControl();
@@ -78,9 +77,7 @@ function loop (timeStamp) {
     }
 
     if (gameOver) {
-
         div.appendChild(retry);
-    
     }
 
 
@@ -136,64 +133,41 @@ Snake.prototype.setControl = function() {
 
     if ((this_.y + gridSectionHeight) % gridSectionHeight === 0) {
         onGridY = true;
-    } else {
-        onGridY = false;
-    }
+    } else {onGridY = false;}
 
     if ((this_.x + gridSectionWidth) % gridSectionWidth === 0) {
         onGrid = true;
-    } else {
-        onGrid = false;
-    }
+    } else {onGrid = false;}
 
-    if (onGrid && onGridY) {
+    if (onGrid && onGridY && start) {
         this.addMovementPath();
-    }
+        if (snakeArrX.length >= 2 && tails.length < 2) {
+            anotherTail();
+        }}
         
     if (movUp || movDown) {
-
-        window.onkeydown = function(e) {
+    window.onkeydown = function(e) {
             
-            if (e.key === 'a') {
-                aPressed = true;
-                dPressed = false;
-            }  else if (e.key === 'd') {
-                dPressed = true;
-                aPressed = false;
-            }
+        if (e.key === 'a') {
+            aPressed = true;
+            dPressed = false;
+        } else if (e.key === 'd') {
+            dPressed = true;
+            aPressed = false;
         }
-
-        // if ((this_.y + gridSectionHeight) % gridSectionHeight === 0) {
-        //     onGridY = true;
-        // } else {
-        //     onGridY = false;
-        // }
-    }
-
-    // if (onGrid && onGridY) {
-    //     this.addMovementPath();
-    // }
+        }}
 
     if (movLeft || movRight) {
+    window.onkeydown = function(e) {
 
-        window.onkeydown = function(e) {
-
-            if (e.key === 'w') {
-               wPressed = true;
-               sPressed = false;
-
-            } else if (e.key === 's') {
-                sPressed = true;
-                wPressed = false;
-            }
+        if (e.key === 'w') {
+            wPressed = true;
+            sPressed = false;
+        } else if (e.key === 's') {
+            sPressed = true;
+            wPressed = false;
         }
-
-        // if ((this_.x + gridSectionWidth) % gridSectionWidth === 0) {
-        //     onGrid = true;
-        // } else {
-        //     onGrid = false;
-        // }
-    }
+        }}
 
     if (wPressed && onGrid) {
         wPressed = false;
@@ -246,9 +220,6 @@ Snake.prototype.collisionDetect = function() {
             apple.newLocation();
             score++;
             anotherTail();
-            if (!tailExists) {
-                tailExists = true;
-            }
         }
     
     // collision with other parts of the snake
@@ -291,13 +262,12 @@ Snake.prototype.addMovementPath = function () {
     if (globalDirArr.length > tails.length + 2) {
         globalDirArr.pop();
     }
-    console.log(snakeArrY);
 }
 
 // || The Tail Class _____________________________________
 class Tail {
     constructor(velX, velY, arrPos, color) {
-        this.height = gridSectionHeight;
+        this.height = gridSectionWidth;
         this.width = gridSectionWidth;
         this.color = color;
         this.x;
@@ -305,9 +275,6 @@ class Tail {
         this.velX = velX;
         this.velY = velY;
         this.tailDirection;
-        this.pathX = [];
-        this.pathY = [];
-        this.dirArr = [];
         this.arrPos = arrPos;
     }
 }
@@ -322,65 +289,19 @@ Tail.prototype.draw = function () {
 // || createTail method
 
 Tail.prototype.createTail = function () {
-    if (!tailExists){
-    if (movUp) {
-        this.x = snake.x;
-        this.y = snake.y + snake.size;
-        this.tailDirection = 'up';
-    } else if (movDown) {
-        this.x = snake.x;
-        this.y = snake.y - snake.size;
-        this.tailDirection = 'down';
-    } else if (movLeft) {
-        this.x = snake.x + snake.size;
-        this.y = snake.y;
-        this.tailDirection = 'left';
-    } else if (movRight) {
-        this.x = snake.x - snake.size;
-        this.y = snake.y;
-        this.tailDirection = 'right';
-    }}
-
-    else if (tailExists) {
-
-    this.tailDirection = tails[tl -1].tailDirection;
-    this.pathX = tails[tl -1].pathX;
-    this.pathY = tails[tl -1].pathY;
-    this.dirArr = tails[tl -1].dirArr;
-
-        if (tails[tl -1].tailDirection === 'up') {
-            this.x = tails[tl -1].x;
-            this.y = tails[tl -1].y + tails[tl -1].height;
-        } else if (tails[tl -1].tailDirection === 'down') {
-            this.x = tails[tl -1].x;
-            this.y = tails[tl -1].y - tails[tl -1].height;
-        } else if (tails[tl -1].tailDirection === 'left') {
-            this.x = tails[tl -1].x + tails[tl -1].width;
-            this.y = tails[tl -1].y;
-        } else if (tails[tl -1].tailDirection === 'right') {
-            this.x = tails[tl -1].x - tails[tl -1].width;
-            this.y = tails[tl -1].y;
-        }
-    }
+        this.x = [snakeArrX][this.arrPos + 1];
+        this.y = snakeArrY[this.arrPos + 1];
+        this.tailDirection = globalDirArr[this.arrPos];
 }
 
 // || tail move method
 
 Tail.prototype.move = function() {
-    // if (this.x === this.pathX[0] && this.y === this.pathY[0]) {
-    //     this.tailDirection = this.dirArr[0];
-    //     if (tails.length > 1 && this.arrPos !== tails.length -1) {
-    //         tails[this.arrPos + 1].dirArr.push(this.dirArr[0]); 
-    //         tails[this.arrPos + 1].pathX.push(this.pathX[0]);
-    //         tails[this.arrPos + 1].pathY.push(this.pathY[0]);
-    //     }
-    //     this.clearMovPath();
-    // }
 
     if (onGrid && onGridY) {
-        this.x = snakeArrX[1];
-        this.y = snakeArrY[1];
-        this.tailDirection = globalDirArr[0];
+        this.x = snakeArrX[this.arrPos + 1];
+        this.y = snakeArrY[this.arrPos + 1];
+        this.tailDirection = globalDirArr[this.arrPos];
     }
 
     if (this.tailDirection === 'up') {
@@ -392,12 +313,6 @@ Tail.prototype.move = function() {
     } else if (this.tailDirection === 'right') {
         this.x += this.velX;
     }
-}
-
-Tail.prototype.clearMovPath = function() {
-    this.dirArr.shift();
-    this.pathX.shift();
-    this.pathY.shift();
 }
 
 Tail.prototype.collision = function() {
@@ -434,20 +349,6 @@ class Food {
 
     }
 }
-
-// Food.prototype.collision = function() {
-//     if (this.xLocation < snake.x + snake.size &&
-//         this.xLocation + this.width > snake.x &&
-//         this.yLocation < snake.y + snake.size &&
-//         this.yLocation + this.height > snake.y) {
-//             anotherTail();
-//             if (!tailExists) {
-//                 tailExists = true;
-//             }
-//             this.xLocation = null;
-//             this.yLocation = null;
-//         }
-// }
 
 // || create a new snake and food instance
 
@@ -526,6 +427,9 @@ function retryGame(e) {
 
     tails.length = 0;
     arrPosNo = 0;
+    snakeArrX.length = 0;
+    snakeArrY.length = 0;
+    globalDirArr.length = 0;
     score = 0;
 
     snake.x = gridSectionWidth * 7;
