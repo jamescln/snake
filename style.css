@@ -15,31 +15,35 @@ body {
     width: 100vw;
     background-color: blanchedalmond;
     display: grid;
+    grid-gap: 5px;
     grid-template-columns: 1fr 300px 1fr;
-    grid-template-rows: 1fr 300px 100px 1fr;
+    grid-template-rows: 5vh 300px 100px 1fr;
 }
 
 /* start button*/
 
-button.start {
-    align-self: center;
-    justify-self: center;
+.start {
+    align-self: stretch;
+    justify-self: stretch;
 
     padding-top: 5px;
     padding-left: 5px;
     padding-bottom: 5px;
     padding-right: 5px;
 
-    border-radius: 25%;
+    border-radius: 3%;
     border-width: 3px;
     border-color: black;
 
-    box-shadow: black;
+    box-shadow: black 0px 7px;
+    transition: ease 0.2s;
+}
 
-    margin-left: 20px;
-    margin-top: 5px;
-
+.start:hover {
     cursor: pointer;
+    color: whitesmoke;
+    background-color: black;
+    border-color: white;
 }
 
 
@@ -60,13 +64,8 @@ div.but {
     grid-row-start: 3;
     grid-row-end: 4;
     align-self: stretch;
-    justify-self: center;
-    display: grid;
-}
-
-.start {
-    align-self: stretch;
     justify-self: stretch;
+    display: grid;
 }
 
 .game {
@@ -82,7 +81,7 @@ div.but {
 @media (min-width: 500px) {
     body {
         grid-template-columns: 1fr 400px 1fr;
-        grid-template-rows: 1fr 400px 1fr;
+        grid-template-rows: 5vh 400px 100px 1fr;
     }
 
     .game {
@@ -94,7 +93,7 @@ div.but {
 @media (min-width: 768px) {
     body {
         grid-template-columns: 1fr 600px 1fr;
-        grid-template-rows: 1fr 600px 1fr;
+        grid-template-rows: 5vh 600px 100px 1fr;
     }
     
     .game {
@@ -106,7 +105,7 @@ div.but {
 @media (min-width: 1281px) {
     body {
         grid-template-columns: 1fr 750px 1fr;
-        grid-template-rows: 1fr 750px 1fr;
+        grid-template-rows: 5vh 750px 100px 1fr;
     }
     
     .game {
@@ -120,7 +119,7 @@ div.but {
 @media (max-height: 450px) {
     body {
         grid-template-columns: 1fr 300px 1fr;
-        grid-template-rows: 1fr 300px 1fr;
+        grid-template-rows: 5vh 300px 1fr;
     }
 
     .game {
