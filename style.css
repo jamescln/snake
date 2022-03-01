@@ -15,8 +15,8 @@ body {
     width: 100vw;
     background-color: blanchedalmond;
     display: grid;
-    grid-template-columns: 1fr 400px 1fr;
-    grid-template-rows: 1fr 400px 1fr;
+    grid-template-columns: 1fr 300px 1fr;
+    grid-template-rows: 1fr 300px 100px 1fr;
 }
 
 /* start button*/
@@ -57,10 +57,16 @@ h1 {
 div.but {
     grid-column-start: 2;
     grid-column-end: 3;
-    grid-row-start: 1;
-    grid-row-end: 2;
-    align-self: start;
+    grid-row-start: 3;
+    grid-row-end: 4;
+    align-self: stretch;
     justify-self: center;
+    display: grid;
+}
+
+.start {
+    align-self: stretch;
+    justify-self: stretch;
 }
 
 .game {
@@ -69,8 +75,20 @@ div.but {
     grid-row-start: 2;
     grid-row-end: 3;
     justify-self: center;
-    width: 400px;
-    height: 400px;
+    width: 300px;
+    height: 300px;
+}
+
+@media (min-width: 500px) {
+    body {
+        grid-template-columns: 1fr 400px 1fr;
+        grid-template-rows: 1fr 400px 1fr;
+    }
+
+    .game {
+        width: 400px;
+        height: 400px;
+    }
 }
 
 @media (min-width: 768px) {
@@ -94,5 +112,19 @@ div.but {
     .game {
         width: 750px;
         height: 750px;
+    }
+}
+
+/* mobile auto rotate */
+
+@media (max-height: 450px) {
+    body {
+        grid-template-columns: 1fr 300px 1fr;
+        grid-template-rows: 1fr 300px 1fr;
+    }
+
+    .game {
+        width: 300px;
+        height: 300px;
     }
 }
