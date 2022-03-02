@@ -17,7 +17,7 @@ body {
     display: grid;
     grid-gap: 5px;
     grid-template-columns: 1fr 300px 1fr;
-    grid-template-rows: 5vh 300px 100px 1fr;
+    grid-template-rows: 5vh 300px 100px 200px 1fr;
 }
 
 /* start button*/
@@ -35,7 +35,7 @@ body {
     border-width: 3px;
     border-color: black;
 
-    box-shadow: black 0px 7px;
+    /* box-shadow: black 0px 7px; */
     transition: ease 0.2s;
 }
 
@@ -78,10 +78,42 @@ div.but {
     height: 300px;
 }
 
+.controls {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 4;
+    grid-row-end: 4;
+    justify-self: stretch;
+    align-self: stretch;
+    display: grid;
+    grid-gap: 2px;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 50% 50%;
+}
+
+.dirbutton {
+    border: black solid 3px;
+    color: black;
+    transition: ease 0.2s;
+}
+
+.dirbutton:hover {
+    cursor: pointer;
+    background-color: black;
+    color: whitesmoke;
+    border-color: white;
+}
+
+.dirbutton:active {
+    background-color: black;
+    color: whitesmoke;
+    border-color: white;
+}
+
 @media (min-width: 500px) {
     body {
         grid-template-columns: 1fr 400px 1fr;
-        grid-template-rows: 5vh 400px 100px 1fr;
+        grid-template-rows: 5vh 400px 100px 200px 1fr;
     }
 
     .game {
@@ -100,6 +132,14 @@ div.but {
         width: 600px;
         height: 600px;
     }
+
+    .controls {
+        display: none;
+    }
+    
+    .dirbutton {
+        display: none;
+    }
 }
 
 @media (min-width: 1281px) {
@@ -111,6 +151,14 @@ div.but {
     .game {
         width: 750px;
         height: 750px;
+    }
+
+    .controls {
+        display: none;
+    }
+    
+    .dirbutton {
+        display: none;
     }
 }
 

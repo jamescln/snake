@@ -4,6 +4,10 @@ const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 const container = document.querySelector('.container');
 const div = document.querySelector('div');
+const upBtn = document.getElementById('up');
+const downBtn = document.getElementById('down');
+const leftBtn = document.getElementById('left');
+const rightBtn = document.getElementById('right');
 
 let height = canvas.height;
 let width = canvas.height;
@@ -144,30 +148,31 @@ Snake.prototype.setControl = function() {
         if (snakeArrX.length >= 2 && tails.length < 2) {
             anotherTail();
         }}
-        
-    if (movUp || movDown) {
+    
+    window.addEventListener('click', function(e) { 
+    if (e.target === upBtn && !movDown) {
+        wPressed = true;
+    } else if (e.target === downBtn && !movUp) {
+        sPressed = true;
+    } else if (e.target === leftBtn && !movRight) {
+        aPressed = true;
+    } else if (e.target === rightBtn && !movLeft) {
+        dPressed = true;
+    }})    
+
     window.onkeydown = function(e) {
             
-        if (e.key === 'a') {
+        if (e.key === 'a' && !movRight) {
             aPressed = true;
-            dPressed = false;
-        } else if (e.key === 'd') {
+        } else if (e.key === 'd' && !movLeft) {
             dPressed = true;
-            aPressed = false;
-        }
-        }}
-
-    if (movLeft || movRight) {
-    window.onkeydown = function(e) {
-
-        if (e.key === 'w') {
+        } else if (e.key === 'w' && !movDown) {
             wPressed = true;
-            sPressed = false;
-        } else if (e.key === 's') {
+        } else if (e.key === 's' && !movUp) {
             sPressed = true;
-            wPressed = false;
         }
-        }}
+    }
+
 
     if (wPressed && onGrid) {
         wPressed = false;
