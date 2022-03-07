@@ -16,8 +16,8 @@ body {
     background-color: blanchedalmond;
     display: grid;
     grid-gap: 5px;
-    grid-template-columns: 1fr 300px 1fr;
-    grid-template-rows: 5vh 300px 100px 200px 1fr;
+    grid-template-columns: 1fr 250px 1fr;
+    grid-template-rows: 5vh 250px 100px 200px 1fr;
 }
 
 /* start button*/
@@ -74,8 +74,8 @@ div.but {
     grid-row-start: 2;
     grid-row-end: 3;
     justify-self: center;
-    width: 300px;
-    height: 300px;
+    width: 250px;
+    height: 250px;
 }
 
 .controls {
@@ -110,6 +110,18 @@ div.but {
     border-color: white;
 }
 
+@media (min-width: 300px) {
+    body {
+        grid-template-columns: 1fr 300px 1fr;
+        grid-template-rows: 5vh 300px 100px 200px 1fr;
+    }
+
+    .game {
+        width: 300px;
+        height: 300px;
+    }
+}
+
 @media (min-width: 500px) {
     body {
         grid-template-columns: 1fr 400px 1fr;
@@ -122,7 +134,7 @@ div.but {
     }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 821px) {
     body {
         grid-template-columns: 1fr 600px 1fr;
         grid-template-rows: 5vh 600px 100px 1fr;
@@ -173,5 +185,17 @@ div.but {
     .game {
         width: 300px;
         height: 300px;
+    }
+}
+
+@media (max-height: 600px) {
+    body {
+        grid-template-columns: 1fr 400px 1fr;
+        grid-template-rows: 5vh 400px 100px 1fr;
+    }
+
+    .game {
+        width: 400px;
+        height: 400px;
     }
 }
